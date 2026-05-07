@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Fake Image Detector",
+  "version": "1.0",
+  "description": "Drag & drop an image to detect if it's real or AI-generated",
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "permissions": ["sidePanel"],
+  "host_permissions": [
+    "http://127.0.0.1:5000/*"
+  ]
+}

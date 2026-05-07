@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="header">
+    <h1>🔍 Fake Image Detector</h1>
+    <p class="subtitle">Drag & drop or click to upload</p>
+  </div>
+
+  <div id="drop-zone">
+    <div id="drop-content">
+      <div class="icon">🖼️</div>
+      <p>Drop image here</p>
+      <span>or click to browse</span>
+    </div>
+    <img id="preview" style="display:none;" />
+    <input type="file" id="file-input" accept="image/*" />
+  </div>
+
+  <div id="result-box" style="display:none;">
+    <div id="result-label"></div>
+    <div id="result-confidence"></div>
+    <div id="result-bar-wrap">
+      <div id="result-bar"></div>
+    </div>
+  </div>
+
+  <div id="error-box" style="display:none;"></div>
+
+  <div id="loading" style="display:none;">
+    <div class="spinner"></div>
+    <p>Analyzing image...</p>
+  </div>
+
+  <button id="reset-btn" style="display:none;">Analyze another image</button>
+
+  <div class="footer">Make sure the API is running on localhost:5000</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
