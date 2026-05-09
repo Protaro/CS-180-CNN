@@ -2,3 +2,9 @@ venv/
 *.zip
 *.h5
 AI vs Human 2025 Data/
+TestDataset/
+asa-real-fake-dataset/
+Veritas_test.ipynb
+vit_env/
+Veritas_ViT_Gen1/
+results/
