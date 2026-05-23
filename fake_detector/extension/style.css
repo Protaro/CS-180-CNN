@@ -61,6 +61,7 @@ body {
   padding: 16px;
   border-radius: 12px;
   text-align: center;
+  margin-bottom: 12px;
 }
 
 #result-box.REAL { background: #0d2e1a; border: 1px solid #2d6a4f; }
@@ -125,18 +126,65 @@ body {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-#reset-btn {
-  display: block;
-  width: 100%;
-  margin-top: 12px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px;
+  gap: 30px;
+}
+
+#feedback-txt {
+  display: none;
+  color: #a0aec0; 
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 80%;
+  margin: 0;
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+button {
   padding: 10px;
+  width: 110px;
   border: none;
   border-radius: 8px;
-  background: #7c6af7;
   color: white;
   font-size: 13px;
   cursor: pointer;
   transition: background 0.2s;
+}
+
+#correct-btn{
+  display: none;
+  background: #28aa17;
+}
+
+#correct-btn:hover { background: #19840b; }
+
+#wrong-btn{
+  display: none;
+  background: #e0323d;
+}
+
+#wrong-btn:hover { background: #b0262f; }
+
+#reset-btn {
+  display: block;
+  width: 100%;
+  background: #7c6af7;
 }
 
 #reset-btn:hover { background: #6254d4; }

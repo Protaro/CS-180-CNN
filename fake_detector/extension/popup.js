@@ -11,6 +11,9 @@ const resultBar   = document.getElementById("result-bar");
 const errorBox    = document.getElementById("error-box");
 const loading     = document.getElementById("loading");
 const resetBtn    = document.getElementById("reset-btn");
+const correctBtn  = document.getElementById("correct-btn");
+const wrongBtn    = document.getElementById("wrong-btn");
+const feedback = document.getElementById("feedback-txt");
 
 // Drag & drop events
 dropZone.addEventListener("dragover", (e) => {
@@ -40,9 +43,30 @@ resetBtn.addEventListener("click", () => {
   errorBox.style.display = "none";
   preview.style.display = "none";
   dropContent.style.display = "flex";
-  resetBtn.style.display = "none";
   fileInput.value = "";
+  hideButtons();
+  feedback.style.display = "none";
 });
+
+correctBtn.addEventListener("click", () => {
+  feedbackText();
+})
+
+wrongBtn.addEventListener("click", () => {
+  feedbackText();
+})
+
+function hideButtons(){
+  resetBtn.style.display = "none";
+  correctBtn.style.display = "none";
+  wrongBtn.style.display = "none";
+}
+
+function feedbackText(){
+  feedback.style.display = "block";
+  hideButtons();
+  resetBtn.style.display = "block";
+}
 
 function handleImage(file) {
   // Show preview
@@ -62,7 +86,7 @@ async function sendToAPI(file) {
   resultBox.style.display = "none";
   errorBox.style.display = "none";
   loading.style.display = "block";
-  resetBtn.style.display = "none";
+  hideButtons();
 
   const formData = new FormData();
   formData.append("image", file);
@@ -92,5 +116,7 @@ async function sendToAPI(file) {
   } finally {
     loading.style.display = "none";
     resetBtn.style.display = "block";
+    wrongBtn.style.display = "inline-block";
+    correctBtn.style.display = "inline-block";
   }
 }
