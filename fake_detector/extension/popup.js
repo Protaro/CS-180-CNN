@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:5000/predict";
+const API_URL = "http://127.0.0.1:5000";
 
 const dropZone    = document.getElementById("drop-zone");
 const dropContent = document.getElementById("drop-content");
@@ -15,6 +15,8 @@ const correctBtn  = document.getElementById("correct-btn");
 const wrongBtn    = document.getElementById("wrong-btn");
 const feedback = document.getElementById("feedback-txt");
 
+let currentImage = "";
+let UIState = "IDLE";
 // Drag & drop events
 dropZone.addEventListener("dragover", (e) => {
   e.preventDefault();
@@ -38,37 +40,94 @@ fileInput.addEventListener("change", () => {
 });
 
 resetBtn.addEventListener("click", () => {
-  resultBox.style.display = "none";
-  resultBox.className = "";
-  errorBox.style.display = "none";
-  preview.style.display = "none";
-  dropContent.style.display = "flex";
   fileInput.value = "";
-  hideButtons();
-  feedback.style.display = "none";
+  setIdle();
 });
 
-correctBtn.addEventListener("click", () => {
-  feedbackText();
+correctBtn.addEventListener("click", async () => {
+  await sendFeedback(true);
+  setFeedback();
 })
 
-wrongBtn.addEventListener("click", () => {
-  feedbackText();
+wrongBtn.addEventListener("click", async () => {
+  await sendFeedback(false);
+  setFeedback();
 })
 
-function hideButtons(){
+function render() {
+  resultBox.style.display = "none";
+  errorBox.style.display = "none";
+  loading.style.display = "none";
+
   resetBtn.style.display = "none";
   correctBtn.style.display = "none";
   wrongBtn.style.display = "none";
+  feedback.style.display = "none";
+
+  if (UIState === "IDLE") {
+    preview.style.display = "none";
+    dropContent.style.display = "flex";
+    return;
+  }
+  preview.style.display = "block";
+  dropContent.style.display = "none";
+
+  if (UIState === "LOADING") {
+    loading.style.display = "block";
+  }
+
+  if (UIState === "PREDICTION") {
+    resultBox.style.display = "block";
+    resetBtn.style.display = "block";
+    correctBtn.style.display = "inline-block";
+    wrongBtn.style.display = "inline-block";
+  }
+
+  if (UIState === "FEEDBACK") {
+    feedback.style.display = "block";
+    resetBtn.style.display = "block";
+  }
 }
 
-function feedbackText(){
-  feedback.style.display = "block";
-  hideButtons();
-  resetBtn.style.display = "block";
+function setIdle(){
+  UIState = "IDLE";
+  render();
+}
+
+function setPrediction(data) {
+  UIState = "PREDICTION";
+  resultBox.className = data.label;
+  const emoji = data.label === "FAKE" ? "🚨 FAKE" : "✅ REAL";
+  resultLabel.textContent = emoji;
+  resultConf.textContent = `Confidence: ${data.confidence}%`;
+  resultBar.style.width = `${data.confidence}%`;
+  render();
+}
+
+function setFeedback() {
+  UIState = "FEEDBACK";
+  render();
+}
+
+async function sendFeedback(isCorrect) {
+  const formData = new FormData();
+  formData.append("image", currentImage);
+  formData.append("accurate", isCorrect ? "true" : "false");
+  formData.append("result", resultBox.className);
+  formData.append("confidence", resultBar.style.width);
+
+  try {
+    await fetch(`${API_URL}/feedback`, {
+      method: "POST",
+      body: formData
+    });
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 function handleImage(file) {
+  setIdle();
   // Show preview
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -83,40 +142,26 @@ function handleImage(file) {
 }
 
 async function sendToAPI(file) {
-  resultBox.style.display = "none";
-  errorBox.style.display = "none";
-  loading.style.display = "block";
-  hideButtons();
+  currentImage = file;
+  UIState = "LOADING";
+  render();
 
   const formData = new FormData();
   formData.append("image", file);
 
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_URL}/predict`, {
       method: "POST",
       body: formData
     });
 
     const data = await response.json();
-
     if (data.error) throw new Error(data.error);
-
-    // Show result
-    resultBox.style.display = "block";
-    resultBox.className = data.label;  // "REAL" or "FAKE"
-
-    const emoji = data.label === "FAKE" ? "🚨 FAKE" : "✅ REAL";
-    resultLabel.textContent = emoji;
-    resultConf.textContent = `Confidence: ${data.confidence}%`;
-    resultBar.style.width = `${data.confidence}%`;
-
+    setPrediction(data);
   } catch (err) {
+    UIState = "IDLE";
     errorBox.style.display = "block";
     errorBox.textContent = `⚠️ Error: ${err.message}. Is the API running on localhost:5000?`;
-  } finally {
-    loading.style.display = "none";
-    resetBtn.style.display = "block";
-    wrongBtn.style.display = "inline-block";
-    correctBtn.style.display = "inline-block";
-  }
+    render();
+  } 
 }
