@@ -171,6 +171,7 @@ async function sendToAPI(file) {
     });
 
     const data = await response.json();
+
     if (data.error) throw new Error(data.error);
     setPrediction(data);
   } catch (err) {
