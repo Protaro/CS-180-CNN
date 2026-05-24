@@ -71,7 +71,7 @@ class Service:
 
         total_feedbacks = len(rows)
 
-        if total_feedbacks < 5:
+        if total_feedbacks < 10:
             return "learning"
 
         mistakes = sum(1 for row in rows if row[0] == 0)
