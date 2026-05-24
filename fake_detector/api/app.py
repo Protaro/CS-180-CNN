@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from transformers import ViTImageProcessor, ViTForImageClassification
 
 DB_PATH = "feedback.db"
-MODEL_PATH = "Veritas_ViT_Gen4" 
+MODEL_PATH = "Veritas_ViT_Gen2" 
 
 app = Flask(__name__)
 CORS(app)  
@@ -129,7 +129,7 @@ def predict():
         })
 
     except Exception as e:
-        # print(f"\nCRASH IN PREDICT: {str(e)}\n")
+        print(f"\nCRASH IN PREDICT: {str(e)}\n")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/health", methods=["GET"])
@@ -167,7 +167,7 @@ def feedback():
         }), 200
         
     except Exception as e:
-        # print(f"\nCRASH IN FEDBACK: {str(e)}\n")
+        print(f"\nCRASH IN FEDBACK: {str(e)}\n")
         return jsonify({
             "error": str(e)
         }), 500
