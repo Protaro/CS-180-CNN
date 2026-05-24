@@ -94,11 +94,24 @@ function setIdle(){
   render();
 }
 
+function getOrCreateUserId() {
+    let userId = localStorage.getItem("veritas_user_id");
+    if (!userId) {
+        userId = "usr_" + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem("veritas_user_id", userId);
+    }
+    return userId;
+}
+
 function setPrediction(data) {
   UIState = "PREDICTION";
   resultBox.className = data.label;
   const emoji = data.label === "FAKE" ? "🚨 FAKE" : "✅ REAL";
-  resultLabel.textContent = emoji;
+  if (data.context_adjusted) {
+    resultLabel.textContent = emoji + " (Adapted)";
+  } else {
+    resultLabel.textContent = emoji;
+  }
   resultConf.textContent = `Confidence: ${data.confidence}%`;
   resultBar.style.width = `${data.confidence}%`;
   render();
@@ -115,6 +128,7 @@ async function sendFeedback(isCorrect) {
   formData.append("accurate", isCorrect ? "true" : "false");
   formData.append("result", resultBox.className);
   formData.append("confidence", resultBar.style.width);
+  formData.append("user_id", getOrCreateUserId());
 
   try {
     await fetch(`${API_URL}/feedback`, {
@@ -148,6 +162,7 @@ async function sendToAPI(file) {
 
   const formData = new FormData();
   formData.append("image", file);
+  formData.append("user_id", getOrCreateUserId());
 
   try {
     const response = await fetch(`${API_URL}/predict`, {

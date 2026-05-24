@@ -8,3 +8,5 @@ Veritas_test.ipynb
 vit_env/
 Veritas_ViT_Gen*/
 results/
+*.db
+test_env/
